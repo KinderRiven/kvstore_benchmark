@@ -12,8 +12,7 @@
 // define InDomain and InRange to determine which slices are in either
 // of these sets respectively.
 
-#ifndef STORAGE_ROCKSDB_INCLUDE_SLICE_TRANSFORM_H_
-#define STORAGE_ROCKSDB_INCLUDE_SLICE_TRANSFORM_H_
+#pragma once
 
 #include <string>
 
@@ -29,7 +28,7 @@ class Slice;
  */
 class SliceTransform {
  public:
-  virtual ~SliceTransform() {};
+  virtual ~SliceTransform(){};
 
   // Return the name of this transformation.
   virtual const char* Name() const = 0;
@@ -59,6 +58,11 @@ class SliceTransform {
 
   // This is currently not used and remains here for backward compatibility.
   virtual bool InRange(const Slice& /*dst*/) const { return false; }
+
+  // Some SliceTransform will have a full length which can be used to
+  // determine if two keys are consecuitive. Can be disabled by always
+  // returning 0
+  virtual bool FullLengthEnabled(size_t* /*len*/) const { return false; }
 
   // Transform(s)=Transform(`prefix`) for any s with `prefix` as a prefix.
   //
@@ -94,6 +98,4 @@ extern const SliceTransform* NewCappedPrefixTransform(size_t cap_len);
 
 extern const SliceTransform* NewNoopTransform();
 
-}
-
-#endif  // STORAGE_ROCKSDB_INCLUDE_SLICE_TRANSFORM_H_
+}  // namespace rocksdb
