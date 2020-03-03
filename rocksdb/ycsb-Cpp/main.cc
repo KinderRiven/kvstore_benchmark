@@ -39,7 +39,7 @@ int main(int argc, char* argv[])
     uint64_t bloom_bits = 10;
     uint64_t block_size = 4096;
 
-    printf("FFFF_1\n");
+    printf("FFFF_1 (%llu)\n", block_size);
     for (int i = 0; i < argc; i++) {
         double d;
         uint64_t n;
