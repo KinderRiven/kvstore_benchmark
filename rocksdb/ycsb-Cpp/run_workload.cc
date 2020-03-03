@@ -85,6 +85,9 @@ static void* thread_task(void* thread_args)
     uint64_t latency = 0;
     total_timer.Start();
 
+    std::string scan_values;
+    Slice sk, sv;
+
     while (true) {
         int test_type = benchmark->get_kv_item(thread_id, &key, key_length, &value, value_length);
         param->bytes += value_length;
@@ -95,22 +98,39 @@ static void* thread_task(void* thread_args)
         little_timer.Start();
 #endif
         if (test_type == OPT_PUT) {
-            Slice sk = Slice((char*)key, key_length);
-            Slice sv = Slice((char*)value, value_length);
+            sk = Slice((char*)key, key_length);
+            sv = Slice((char*)value, value_length);
             status = db->Put(WriteOptions(), sk, sv);
             if (status.ok()) {
                 param->put_succeed++;
             }
         } else if (test_type == OPT_UPDATE) {
-            Slice sk = Slice((char*)key, key_length);
-            Slice sv = Slice((char*)value, value_length);
+            sk = Slice((char*)key, key_length);
+            sv = Slice((char*)value, value_length);
             status = db->Put(WriteOptions(), sk, sv);
             if (status.ok()) {
                 param->update_succeed++;
             }
         } else if (test_type == OPT_GET) {
+            sk = Slice((char*)key, key_length);
+            status = db->Get(ReadOptions(), sk, &sv);
+            if (status.ok()) {
+                param->get_succeed++;
+            }
         } else if (test_type == OPT_DELETE) {
         } else if (test_type == OPT_SCAN) {
+            sk = Slice((char*)key, key_length);
+            Iterator* it = db->NewIterator(ReadOptions());
+            scan_count = 0;
+            std::string scan_values;
+            for (it->Seek(sk); it->Valid(); it->Next()) {
+                scan_values = it->value().ToString();
+                scan_count++;
+                if (scan_count == SCAN_RANGE) {
+                    break;
+                }
+            }
+            param->scan_succeed += scan_count;
         }
 
 #if (defined STORE_EACH_LATENCY)
