@@ -62,6 +62,7 @@ static void* thread_task(void* thread_args)
     assert(benchmark != nullptr);
     benchmark->init_thread();
 
+    Status status;
     DB* db = (DB*)param->db;
 
 #if (defined THREAD_BIND_CPU)
@@ -88,16 +89,25 @@ static void* thread_task(void* thread_args)
         int test_type = benchmark->get_kv_item(thread_id, &key, key_length, &value, value_length);
         param->bytes += value_length;
         if (test_type == -1) {
-            Slice sk = Slice((char*)key, key_length);
-            Slice sv = Slice((char*)value, value_length);
-            db->Put(WriteOptions(), sk, sv);
             break;
         }
 #if (defined STORE_EACH_LATENCY)
         little_timer.Start();
 #endif
         if (test_type == OPT_PUT) {
+            Slice sk = Slice((char*)key, key_length);
+            Slice sv = Slice((char*)value, value_length);
+            status = db->Put(WriteOptions(), sk, sv);
+            if (status.ok()) {
+                param->put_succeed++;
+            }
         } else if (test_type == OPT_UPDATE) {
+            Slice sk = Slice((char*)key, key_length);
+            Slice sv = Slice((char*)value, value_length);
+            status = db->Put(WriteOptions(), sk, sv);
+            if (status.ok()) {
+                param->update_succeed++;
+            }
         } else if (test_type == OPT_GET) {
         } else if (test_type == OPT_DELETE) {
         } else if (test_type == OPT_SCAN) {
