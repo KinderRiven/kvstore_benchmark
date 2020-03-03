@@ -28,8 +28,8 @@ int main(int argc, char* argv[])
     int seq = 0; // seq or random
     int num_server_thread = 1; // server thread
     int num_backend_thread = 1; // backend thread
-    uint64_t num_warm_opt[OPT_TYPE_COUNT] = { 500000, 0, 0, 0, 0 };
-    uint64_t num_run_opt[OPT_TYPE_COUNT] = { 100000, 0, 0, 0, 0 };
+    uint64_t num_warm_opt[OPT_TYPE_COUNT] = { 5000000, 0, 0, 0, 0 };
+    uint64_t num_run_opt[OPT_TYPE_COUNT] = { 1000000, 0, 0, 0, 0 };
     int warm_seed[OPT_TYPE_COUNT] = { 1000, 0, 0, 0, 0 };
     int run_seed[OPT_TYPE_COUNT] = { 2000, 1000, 1000, 1000, 1000 };
     uint64_t scan_range = 100;
@@ -86,6 +86,7 @@ int main(int argc, char* argv[])
     options.compression = kNoCompression;
     options.write_buffer_size = write_buffer_size;
     BlockBasedTableOptions table_options;
+    table_options.no_block_cache = true;
     table_options.filter_policy.reset(NewBloomFilterPolicy(10, false));
     options.table_factory.reset(NewBlockBasedTableFactory(table_options));
     options.create_if_missing = true;
