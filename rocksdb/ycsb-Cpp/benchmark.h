@@ -86,6 +86,7 @@ public:
                 opt_count[i][OPT_DELETE], opt_count[i][OPT_SCAN]);
         }
     }
+
 public:
     int get_kv_item(int thread_id, uint8_t** key, size_t& key_length, uint8_t** value, size_t& value_length)
     {

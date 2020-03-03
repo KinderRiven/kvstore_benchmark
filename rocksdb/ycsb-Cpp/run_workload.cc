@@ -120,11 +120,12 @@ static void* thread_task(void* thread_args)
         } else if (test_type == OPT_DELETE) {
         } else if (test_type == OPT_SCAN) {
             sk = Slice((char*)key, key_length);
+            std::vector<std::string> vec_values;
             Iterator* it = db->NewIterator(ReadOptions());
             scan_count = 0;
             std::string scan_values;
             for (it->Seek(sk); it->Valid(); it->Next()) {
-                read_value = it->value().ToString();
+                vec_values.push_back(it->value().ToString());
                 scan_count++;
                 if (scan_count == SCAN_RANGE) {
                     break;
