@@ -39,6 +39,8 @@ int main(int argc, char* argv[])
     uint64_t bloom_bits = 10;
     uint64_t block_size = 4096;
 
+    printf("FFFF_1\n");
+
     for (int i = 0; i < argc; i++) {
         double d;
         uint64_t n;
@@ -80,6 +82,8 @@ int main(int argc, char* argv[])
         }
     }
 
+    printf("FFFF_2\n");
+
     Options options;
     options.compression = kNoCompression;
     options.write_buffer_size = write_buffer_size;
@@ -101,6 +105,8 @@ int main(int argc, char* argv[])
     Status status = DB::Open(options, ssd_path, &db);
     assert(db != nullptr);
     assert(status.ok());
+
+    printf("FFFF_3\n");
 
     warm_benchmark = new YCSB_Benchmark(YCSB_SEQ_LOAD, num_server_thread, num_warm_opt[0], num_warm_opt[0]);
     Workload* warm_workload = new Workload(warm_benchmark, nullptr, num_server_thread);
