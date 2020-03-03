@@ -11,6 +11,9 @@
 
 #define SCAN_RANGE 100
 
+#include "rocksdb/db.h"
+using namespace rocksdb;
+
 static int numa_0[] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9,
     20, 21, 22, 23, 24, 25, 26, 27, 28, 29,
     10, 11, 12, 13, 14, 15, 16, 17, 18, 19,
@@ -59,6 +62,8 @@ static void* thread_task(void* thread_args)
     assert(benchmark != nullptr);
     benchmark->init_thread();
 
+    DB* db = (DB*)param->db;
+
 #if (defined THREAD_BIND_CPU)
     cpu_set_t mask;
     CPU_ZERO(&mask);
@@ -83,6 +88,9 @@ static void* thread_task(void* thread_args)
         int test_type = benchmark->get_kv_item(thread_id, &key, key_length, &value, value_length);
         param->bytes += value_length;
         if (test_type == -1) {
+            Slice sk = Slice((char*)key, key_length);
+            Slice sv = Slice((char*)value, value_length);
+            db->Put(WriteOptions(), sk, sv);
             break;
         }
 #if (defined STORE_EACH_LATENCY)

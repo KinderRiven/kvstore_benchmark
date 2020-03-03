@@ -87,9 +87,9 @@ int main(int argc, char* argv[])
     Options options;
     options.compression = kNoCompression;
     options.write_buffer_size = write_buffer_size;
-    BlockBasedTableOptions table_options;
-    table_options.filter_policy.reset(NewBloomFilterPolicy(10, false));
-    options.table_factory.reset(NewBlockBasedTableFactory(table_options));
+    // BlockBasedTableOptions table_options;
+    // table_options.filter_policy.reset(NewBloomFilterPolicy(10, false));
+    // options.table_factory.reset(NewBlockBasedTableFactory(table_options));
     options.create_if_missing = true;
     options.target_file_size_base = max_file_size;
 
@@ -111,13 +111,13 @@ int main(int argc, char* argv[])
     printf("FFFF_4\n");
 
     warm_benchmark = new YCSB_Benchmark(YCSB_SEQ_LOAD, num_server_thread, num_warm_opt[0], num_warm_opt[0]);
-    Workload* warm_workload = new Workload(warm_benchmark, nullptr, num_server_thread);
+    Workload* warm_workload = new Workload(warm_benchmark, (void*)db, num_server_thread);
     warm_workload->Run();
     warm_benchmark->print();
 
     for (int i = 0; i < num_workloads; i++) {
         run_benchmark = new YCSB_Benchmark(ycsb_workloads[i], num_server_thread, num_warm_opt[0], num_run_opt[0]);
-        Workload* run_workload = new Workload(run_benchmark, nullptr, num_server_thread);
+        Workload* run_workload = new Workload(run_benchmark, (void*)db, num_server_thread);
         run_workload->Run();
         run_benchmark->print();
     }
