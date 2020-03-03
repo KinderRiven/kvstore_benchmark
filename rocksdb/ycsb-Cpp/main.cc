@@ -12,8 +12,8 @@ INITIALIZE_EASYLOGGINGPP
 
 using namespace rocksdb;
 
-static int num_workloads = 1;
-static int ycsb_workloads[] = { YCSB_E, YCSB_A, YCSB_B, YCSB_C, YCSB_E };
+static int num_workloads = 4;
+static int ycsb_workloads[] = { YCSB_A, YCSB_B, YCSB_C, YCSB_E};
 
 int main(int argc, char* argv[])
 {
@@ -28,8 +28,8 @@ int main(int argc, char* argv[])
     int seq = 0; // seq or random
     int num_server_thread = 1; // server thread
     int num_backend_thread = 1; // backend thread
-    uint64_t num_warm_opt[OPT_TYPE_COUNT] = { 5000000, 0, 0, 0, 0 };
-    uint64_t num_run_opt[OPT_TYPE_COUNT] = { 1000000, 0, 0, 0, 0 };
+    uint64_t num_warm_opt[OPT_TYPE_COUNT] = { 100000000, 0, 0, 0, 0 };
+    uint64_t num_run_opt[OPT_TYPE_COUNT] = { 10000000, 0, 0, 0, 0 };
     int warm_seed[OPT_TYPE_COUNT] = { 1000, 0, 0, 0, 0 };
     int run_seed[OPT_TYPE_COUNT] = { 2000, 1000, 1000, 1000, 1000 };
     uint64_t scan_range = 100;
