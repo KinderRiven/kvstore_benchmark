@@ -1,0 +1,2 @@
+./../test/tester --num_warm=2000000 --num_get=2000000 --pmem_file_path=/home/pmem0/pm --pmem_file_size=2048 --num_partition=64 --seg_size=2 --frame_size=4
+./../test/tester --num_warm=100000000 --num_get=20000000 --pmem_file_path=/home/pmem0/pm --pmem_file_size=30000 --num_partition=2048 --seg_size=4 --frame_size=6
