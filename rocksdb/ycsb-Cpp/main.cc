@@ -93,6 +93,8 @@ int main(int argc, char* argv[])
     options.create_if_missing = true;
     options.target_file_size_base = max_file_size;
 
+    printf("FFFF_3\n");
+
     LOG(INFO) << "|-----------------[RocksDB]-----------------";
     LOG(INFO) << "|- [db path:" << ssd_path << "]";
     LOG(INFO) << "|- [write_buffer_size:" << write_buffer_size / (1024 * 1024) << "MB]";
@@ -106,7 +108,7 @@ int main(int argc, char* argv[])
     assert(db != nullptr);
     assert(status.ok());
 
-    printf("FFFF_3\n");
+    printf("FFFF_4\n");
 
     warm_benchmark = new YCSB_Benchmark(YCSB_SEQ_LOAD, num_server_thread, num_warm_opt[0], num_warm_opt[0]);
     Workload* warm_workload = new Workload(warm_benchmark, nullptr, num_server_thread);
