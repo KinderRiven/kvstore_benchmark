@@ -85,7 +85,7 @@ static void* thread_task(void* thread_args)
     uint64_t latency = 0;
     total_timer.Start();
 
-    std::string scan_values;
+    std::string read_value;
     Slice sk, sv;
 
     while (true) {
@@ -113,7 +113,7 @@ static void* thread_task(void* thread_args)
             }
         } else if (test_type == OPT_GET) {
             sk = Slice((char*)key, key_length);
-            status = db->Get(ReadOptions(), sk, &sv);
+            status = db->Get(ReadOptions(), sk, &read_value);
             if (status.ok()) {
                 param->get_succeed++;
             }
@@ -124,7 +124,7 @@ static void* thread_task(void* thread_args)
             scan_count = 0;
             std::string scan_values;
             for (it->Seek(sk); it->Valid(); it->Next()) {
-                scan_values = it->value().ToString();
+                read_value = it->value().ToString();
                 scan_count++;
                 if (scan_count == SCAN_RANGE) {
                     break;
