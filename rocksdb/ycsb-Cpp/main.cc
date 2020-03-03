@@ -26,7 +26,7 @@ int main(int argc, char* argv[])
     size_t pmem_file_size = (size_t)512 * 1024 * 1024;
     // Benchmark
     int seq = 0; // seq or random
-    int num_server_thread = 2; // server thread
+    int num_server_thread = 1; // server thread
     int num_backend_thread = 1; // backend thread
     uint64_t num_warm_opt[OPT_TYPE_COUNT] = { 500000, 0, 0, 0, 0 };
     uint64_t num_run_opt[OPT_TYPE_COUNT] = { 100000, 0, 0, 0, 0 };
@@ -91,7 +91,7 @@ int main(int argc, char* argv[])
     options.create_if_missing = true;
     options.target_file_size_base = max_file_size;
 
-    printf("FFFF_3\n");
+    printf("FFFF_3 (%llu)\n", block_size);
     LOG(INFO) << "|-----------------[RocksDB]-----------------";
     LOG(INFO) << "|- [db path:" << ssd_path << "]";
     LOG(INFO) << "|- [write_buffer_size:" << write_buffer_size / (1024 * 1024) << "MB]";
