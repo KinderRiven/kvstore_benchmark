@@ -87,9 +87,9 @@ int main(int argc, char* argv[])
     Options options;
     options.compression = kNoCompression;
     options.write_buffer_size = write_buffer_size;
-    BlockBasedTableOptions table_options;
-    table_options.filter_policy.reset(NewBloomFilterPolicy(bloom_bits, false));
-    options.table_factory.reset(NewBlockBasedTableFactory(table_options));
+    // BlockBasedTableOptions table_options;
+    // table_options.filter_policy.reset(NewBloomFilterPolicy(bloom_bits, false));
+    // options.table_factory.reset(NewBlockBasedTableFactory(table_options));
     options.create_if_missing = true;
     options.target_file_size_base = max_file_size;
 
