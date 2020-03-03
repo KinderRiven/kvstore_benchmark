@@ -126,6 +126,7 @@ static void* thread_task(void* thread_args)
             std::string scan_values;
             for (it->Seek(sk); it->Valid(); it->Next()) {
                 vec_values.push_back(it->value().ToString());
+                std::cout << it->value().ToString() << std::endl;
                 scan_count++;
                 if (scan_count == SCAN_RANGE) {
                     break;
