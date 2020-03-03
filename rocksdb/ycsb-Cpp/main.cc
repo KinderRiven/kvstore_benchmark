@@ -81,7 +81,7 @@ int main(int argc, char* argv[])
         }
     }
 
-    printf("FFFF_2\n");
+    printf("FFFF_2 (%llu)\n", block_size);
     Options options;
     options.compression = kNoCompression;
     options.write_buffer_size = write_buffer_size;
