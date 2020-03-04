@@ -132,6 +132,7 @@ static void* thread_task(void* thread_args)
                 }
             }
             param->scan_succeed += scan_count;
+            delete it;
         }
 
 #if (defined STORE_EACH_LATENCY)
