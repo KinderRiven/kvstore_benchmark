@@ -36,9 +36,10 @@ public:
     size_t bytes;
 };
 
-// #define STORE_EACH_LATENCY
+#define STORE_EACH_LATENCY
 #if (defined STORE_EACH_LATENCY)
-static std::vector<uint64_t> vec_opt_latency[32][OPT_TYPE_COUNT];
+static std::vector<uint64_t> small_latency[32][OPT_TYPE_COUNT];
+static std::vector<uint64_t> large_latency[32][OPT_TYPE_COUNT];
 #endif
 
 static void result_output(const char* name, std::vector<uint64_t>& data)
@@ -81,7 +82,7 @@ static void* thread_task(void* thread_args)
     size_t value_length;
     uint64_t scan_count;
 
-    Timer little_timer, total_timer;
+    Timer single_request_timer, total_timer;
     uint64_t latency = 0;
     total_timer.Start();
 
@@ -95,7 +96,7 @@ static void* thread_task(void* thread_args)
             break;
         }
 #if (defined STORE_EACH_LATENCY)
-        little_timer.Start();
+        single_request_timer.Start();
 #endif
         if (test_type == OPT_PUT) {
             sk = Slice((char*)key, key_length);
@@ -136,10 +137,14 @@ static void* thread_task(void* thread_args)
         }
 
 #if (defined STORE_EACH_LATENCY)
-        little_timer.Stop();
-        latency = little_timer.Get();
+        single_request_timer.Stop();
+        latency = single_request_timer.Get();
         param->sum_latency[test_type] += latency;
-        vec_opt_latency[thread_id][test_type].push_back(latency);
+        if (value_length < 4096) {
+            small_latency[thread_id][test_type].push_back(latency);
+        } else {
+            large_latency[thread_id][test_type].push_back(latency);
+        }
 #endif
         param->sum_count[test_type]++;
         param->sum_opt_count++;
@@ -210,15 +215,22 @@ void Workload::Run()
 
     LOG(INFO) << "|- [IOPS:" << total_iops << "][Latency:" << avg_latency / num_thread << "ns]";
     LOG(INFO) << "|- [BW:" << sum_bw << "MB/s]";
+
 #if (defined STORE_EACH_LATENCY)
     mkdir("detail_latency", 0777);
     for (int i = 0; i < num_thread; i++) {
         for (int j = 0; j < OPT_TYPE_COUNT; j++) {
-            if (vec_opt_latency[i][j].size() > 0) {
+            if (small_latency[i][j].size() > 0) {
                 char name[128];
-                snprintf(name, sizeof(name), "detail_latency/%d_%d.lightkv", i, j);
-                result_output(name, vec_opt_latency[i][j]);
-                vec_opt_latency[i][j].clear();
+                snprintf(name, sizeof(name), "detail_latency/%d_%d.small", i, j);
+                result_output(name, small_latency[i][j]);
+                small_latency[i][j].clear();
+            }
+            if (large_latency[i][j].size() > 0) {
+                char name[128];
+                snprintf(name, sizeof(name), "detail_latency/%d_%d.large", i, j);
+                result_output(name, large_latency[i][j]);
+                large_latency[i][j].clear();
             }
         }
     }

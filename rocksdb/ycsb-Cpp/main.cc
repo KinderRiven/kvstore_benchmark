@@ -13,7 +13,7 @@ INITIALIZE_EASYLOGGINGPP
 using namespace rocksdb;
 
 static int num_workloads = 4;
-static int ycsb_workloads[] = { YCSB_A, YCSB_B, YCSB_C, YCSB_E};
+static int ycsb_workloads[] = { YCSB_A, YCSB_B, YCSB_C, YCSB_E };
 
 int main(int argc, char* argv[])
 {
@@ -107,7 +107,7 @@ int main(int argc, char* argv[])
     assert(status.ok());
 
     printf("FFFF_4\n");
-    warm_benchmark = new YCSB_Benchmark(YCSB_SEQ_LOAD, num_server_thread, num_warm_opt[0], num_warm_opt[0]);
+    warm_benchmark = new YCSB_Benchmark(YCSB_LOAD, num_server_thread, num_warm_opt[0], num_warm_opt[0]);
     Workload* warm_workload = new Workload(warm_benchmark, (void*)db, num_server_thread);
     warm_workload->Run();
     warm_benchmark->print();

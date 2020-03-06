@@ -14,7 +14,7 @@
 
 #define OPT_KEY_LENGTH (8)
 #define OPT_VALUE_LENGTH (1024)
-#define OPT_MAX_VALUE_LENGTH (1024)
+#define OPT_MAX_VALUE_LENGTH (4096)
 
 #define OPT_TYPE_COUNT (5)
 #define OPT_PUT (0)
@@ -148,13 +148,13 @@ private:
         size_t item_size;
         if (uid * 100LU / max_uid < 50) {
             // item_size = 256;
-            item_size = OPT_VALUE_LENGTH;
+            item_size = 256;
         } else if (uid * 100LU / max_uid < 82) {
-            item_size = OPT_MAX_VALUE_LENGTH;
+            item_size = 4096;
         } else if (uid * 100LU / max_uid < 98) {
-            item_size = OPT_MAX_VALUE_LENGTH;
+            item_size = 4096;
         } else {
-            item_size = OPT_MAX_VALUE_LENGTH;
+            item_size = 4096;
         }
 
         *((uint64_t*)key_[thread_id]) = uid;
