@@ -119,6 +119,17 @@ static void* thread_task(void* thread_args)
                 param->get_succeed++;
             }
         } else if (test_type == OPT_DELETE) {
+        } else if (test_type == OPT_RMW) {
+            sk = Slice((char*)key, key_length);
+            sv = Slice((char*)value, value_length);
+            status = db->Get(ReadOptions(), sk, &read_value);
+            if (status.ok()) {
+                param->get_succeed++;
+            }
+            status = db->Put(WriteOptions(), sk, sv);
+            if (status.ok()) {
+                param->update_succeed++;
+            }
         } else if (test_type == OPT_SCAN) {
             sk = Slice((char*)key, key_length);
             std::vector<std::string> vec_values;
@@ -160,6 +171,8 @@ Workload::Workload(Benchmark* benchmark, void* db, int num_thread)
     , num_thread(num_thread)
 {
 }
+
+static char workload_name[YCSB_WORKLOAD_TYPE][128] = { "YCSB_A", "YCSB_B", "YCSB_C", "YCSB_D", "YCSB_E", "YCSB_F", "YCSB_LOAD", "YCSB_SEQ" };
 
 void Workload::Run()
 {
@@ -222,13 +235,13 @@ void Workload::Run()
         for (int j = 0; j < OPT_TYPE_COUNT; j++) {
             if (small_latency[i][j].size() > 0) {
                 char name[128];
-                snprintf(name, sizeof(name), "detail_latency/%d_%d.small", i, j);
+                snprintf(name, sizeof(name), "detail_latency/%s_%d_%d.small", workload_name[benchmark->get_type() >> 1], i, j);
                 result_output(name, small_latency[i][j]);
                 small_latency[i][j].clear();
             }
             if (large_latency[i][j].size() > 0) {
                 char name[128];
-                snprintf(name, sizeof(name), "detail_latency/%d_%d.large", i, j);
+                snprintf(name, sizeof(name), "detail_latency/%s_%d_%d.large", workload_name[benchmark->get_type() >> 1], i, j);
                 result_output(name, large_latency[i][j]);
                 large_latency[i][j].clear();
             }

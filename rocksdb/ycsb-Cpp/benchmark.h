@@ -13,17 +13,19 @@
 #define BENCH_LEVELDB (2)
 
 #define OPT_KEY_LENGTH (8)
-#define OPT_VALUE_LENGTH (1024)
+#define OPT_VALUE_LENGTH (256)
 #define OPT_MAX_VALUE_LENGTH (4096)
 
-#define OPT_TYPE_COUNT (5)
+#define OPT_TYPE_COUNT (6)
 #define OPT_PUT (0)
 #define OPT_UPDATE (1)
 #define OPT_GET (2)
 #define OPT_DELETE (3)
 #define OPT_SCAN (4)
+#define OPT_RMW (5)
 
 #define YCSB_ZIPFAN (1)
+#define YCSB_WORKLOAD_TYPE (8)
 // YCSB-A: 50% updates, 50% reads
 #define YCSB_A (0 << 1)
 // YCSB-B: 5% updates, 95% reads
@@ -46,15 +48,18 @@ public:
     virtual int get_kv_item(int thread_id, uint8_t** key, size_t& key_length, uint8_t** value, size_t& value_length) = 0;
     virtual void init_thread() = 0;
     virtual void print() = 0;
+    virtual int scan_range() = 0;
+    virtual int get_type() = 0;
 };
 
 class YCSB_Benchmark : public Benchmark {
 public:
-    YCSB_Benchmark(int type, int num_thread, uint64_t num_item, uint64_t num_opt)
+    YCSB_Benchmark(int type, int num_thread, uint64_t num_item, uint64_t num_opt, int srange)
         : type(type & (~1))
         , num_thread(num_thread)
         , num_item(num_item)
         , seq_id(1)
+        , srange(srange)
     {
         init_zipf_generator(0, num_item - 1);
         each_thread_opt = num_opt / num_thread;
@@ -77,14 +82,24 @@ public:
         init_seed();
     }
 
+    int get_type()
+    {
+        return type;
+    }
+
     void print()
     {
         printf(">>[YCSB-Benchmark]\n");
         for (int i = 0; i < num_thread; i++) {
-            printf("  [%d][PUT:%llu][UPDATE:%llu][GET:%llu][DELETE:%llu][SCAN:%llu]\n",
+            printf("  [%d][PUT:%llu][UPDATE:%llu][GET:%llu][DELETE:%llu][SCAN:%llu][SRANGE:%d][RMW:%llu]\n",
                 i, opt_count[i][OPT_PUT], opt_count[i][OPT_UPDATE], opt_count[i][OPT_GET],
-                opt_count[i][OPT_DELETE], opt_count[i][OPT_SCAN]);
+                opt_count[i][OPT_DELETE], opt_count[i][OPT_SCAN], srange, opt_count[i][OPT_RMW]);
         }
+    }
+
+    int scan_range()
+    {
+        return srange;
     }
 
 public:
@@ -108,33 +123,46 @@ public:
             }
             opt_count[thread_id][OPT_PUT]++;
             opt_type = OPT_PUT;
-        } else if (type == YCSB_A || type == YCSB_B || type == YCSB_C) { // ycsb-a, ycsb-b, ycsb-c
+        } else if (type == YCSB_A || type == YCSB_B || type == YCSB_C || type == YCSB_D) {
             if (zipfian) { // zipf skew
                 value_length = generate_kv_pair(thread_id, zipf_next(), num_item);
             } else { // uniform skew
                 value_length = generate_kv_pair(thread_id, uniform_next(), num_item);
             }
             if (random_get_put(type)) {
-                opt_count[thread_id][OPT_UPDATE]++; // update
+                opt_count[thread_id][OPT_UPDATE]++;
                 opt_type = OPT_UPDATE;
             } else {
-                opt_count[thread_id][OPT_GET]++; // scan
+                opt_count[thread_id][OPT_GET]++;
                 opt_type = OPT_GET;
             }
-        } else if (type == YCSB_E) { // ycsb-e
-            if (zipfian) { // zipf skew
+        } else if (type == YCSB_E) {
+            if (zipfian) {
                 value_length = generate_kv_pair(thread_id, zipf_next(), num_item);
-            } else { // uniform skew
+            } else {
                 value_length = generate_kv_pair(thread_id, uniform_next(), num_item);
             }
             if (random_get_put(type)) {
-                opt_count[thread_id][OPT_UPDATE]++; // update
+                opt_count[thread_id][OPT_UPDATE]++;
                 opt_type = OPT_UPDATE;
             } else {
-                opt_count[thread_id][OPT_SCAN]++; // get
+                opt_count[thread_id][OPT_SCAN]++;
                 opt_type = OPT_SCAN;
             }
-        } else { // ycsb-d, ycsb-f
+        } else if (type == YCSB_F) {
+            if (zipfian) {
+                value_length = generate_kv_pair(thread_id, zipf_next(), num_item);
+            } else {
+                value_length = generate_kv_pair(thread_id, uniform_next(), num_item);
+            }
+            if (random_get_put(type)) {
+                opt_count[thread_id][OPT_RMW]++;
+                opt_type = OPT_RMW;
+            } else {
+                opt_count[thread_id][OPT_GET]++;
+                opt_type = OPT_GET;
+            }
+        } else {
             opt_type = -1;
         }
         *key = (uint8_t*)key_[thread_id];
@@ -147,7 +175,6 @@ private:
     {
         size_t item_size;
         if (uid * 100LU / max_uid < 50) {
-            // item_size = 256;
             item_size = 256;
         } else if (uid * 100LU / max_uid < 82) {
             item_size = 4096;
@@ -156,7 +183,6 @@ private:
         } else {
             item_size = 4096;
         }
-
         *((uint64_t*)key_[thread_id]) = uid;
         *((uint64_t*)val_[thread_id]) = uid;
         return item_size;
@@ -172,20 +198,27 @@ private:
             return random >= 50;
         case YCSB_B: // B
             return random >= 95;
-        case YCSB_C: // C
+        case YCSB_C: // C only read
             return 0;
+        case YCSB_D:
+            return random >= 95;
         case YCSB_E: // E
             return random >= 95;
+        case YCSB_F:
+            return random >= 50;
         default:
             return 0;
         }
     }
 
+public:
+    int type;
+    int srange;
+
 private:
     uint64_t seq_id;
 
 private:
-    int type;
     int each_thread_opt;
     int num_thread;
     int zipfian;
@@ -243,6 +276,11 @@ public:
 
     void print()
     {
+    }
+
+    int get_type()
+    {
+        return 0;
     }
 
 public:

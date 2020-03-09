@@ -12,8 +12,8 @@ INITIALIZE_EASYLOGGINGPP
 
 using namespace rocksdb;
 
-static int num_workloads = 4;
-static int ycsb_workloads[] = { YCSB_A, YCSB_B, YCSB_C, YCSB_E };
+static int num_workloads = 6;
+static int ycsb_workloads[] = { YCSB_A, YCSB_B, YCSB_C, YCSB_D, YCSB_E, YCSB_F };
 
 int main(int argc, char* argv[])
 {
@@ -40,6 +40,7 @@ int main(int argc, char* argv[])
     uint64_t block_size = 4096;
 
     printf("FFFF_1 (%llu)\n", block_size);
+    
     for (int i = 0; i < argc; i++) {
         double d;
         uint64_t n;
