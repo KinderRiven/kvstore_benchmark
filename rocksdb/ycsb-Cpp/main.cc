@@ -40,7 +40,7 @@ int main(int argc, char* argv[])
     uint64_t block_size = 4096;
 
     printf("FFFF_1 (%llu)\n", block_size);
-    
+
     for (int i = 0; i < argc; i++) {
         double d;
         uint64_t n;
@@ -108,13 +108,13 @@ int main(int argc, char* argv[])
     assert(status.ok());
 
     printf("FFFF_4\n");
-    warm_benchmark = new YCSB_Benchmark(YCSB_LOAD, num_server_thread, num_warm_opt[0], num_warm_opt[0]);
+    warm_benchmark = new YCSB_Benchmark(YCSB_LOAD, num_server_thread, num_warm_opt[0], num_warm_opt[0], 100);
     Workload* warm_workload = new Workload(warm_benchmark, (void*)db, num_server_thread);
     warm_workload->Run();
     warm_benchmark->print();
 
     for (int i = 0; i < num_workloads; i++) {
-        run_benchmark = new YCSB_Benchmark(ycsb_workloads[i], num_server_thread, num_warm_opt[0], num_run_opt[0]);
+        run_benchmark = new YCSB_Benchmark(ycsb_workloads[i], num_server_thread, num_warm_opt[0], num_run_opt[0], 100);
         Workload* run_workload = new Workload(run_benchmark, (void*)db, num_server_thread);
         run_workload->Run();
         run_benchmark->print();
