@@ -1,5 +1,5 @@
 all:
-	g++ -std=c++11 run_workload.cc main.cc easylogging/easylogging++.cc ycsb-local/workload_ycsb.c -o tester -I. -I../include -Iycsb-local -Ileveldb_bench -L../../lib/novelsm -lleveldb -lpthread -lpthread -lnuma
+	g++ -std=c++11 run_workload.cc main.cc easylogging/easylogging++.cc ycsb-local/workload_ycsb.c -o tester -I. -I../include -Iycsb-local -Ileveldb_bench -L../../lib/novelsm -lleveldb -lpthread -lpthread -lsnappy -lnuma
 
 detail: detail.cc
 	g++ -std=c++11 detail.cc -o detail
