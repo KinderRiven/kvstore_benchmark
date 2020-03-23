@@ -16,8 +16,9 @@ using namespace rocksdb;
 
 static int num_workloads = 6;
 // static int ycsb_workloads[] = { YCSB_ONLY_WRITE };
+static int zipfan = 0;
 static size_t dbsize = 128 * 1024;
-static int ycsb_workloads[] = { YCSB_A, YCSB_B, YCSB_C, YCSB_D, YCSB_F };
+static int ycsb_workloads[] = { YCSB_A, YCSB_B, YCSB_C, YCSB_D, YCSB_E, YCSB_F };
 static size_t workload_size[] = { 32 * 1024, 32 * 1024, 32 * 1024, 32 * 1024, 32 * 1024 }; // MB
 static int workload_kv_type = 2;
 static size_t workload_kv_length[] = { 256, 4096 };
@@ -114,16 +115,16 @@ int main(int argc, char* argv[])
 
     printf("FFFF_4\n");
     // Benchmark* benchmark = new YCSB_Benchmark(YCSB_ONLY_WRITE, num_server_thread, dbsize * 1024 * 1024, dbsize * 1024 * 1024, workload_kv_type, workload_kv_length, workload_kv_proportion, SCAN_RANGE / num_backend_thread);
-    Benchmark* benchmark = new YCSB_Benchmark(YCSB_SEQ_LOAD, num_server_thread, dbsize * 1024 * 1024, dbsize * 1024 * 1024, workload_kv_type, workload_kv_length, workload_kv_proportion, SCAN_RANGE / num_backend_thread);
+    Benchmark* benchmark = new YCSB_Benchmark(YCSB_SEQ_LOAD | zipfan, num_server_thread, dbsize * 1024 * 1024, dbsize * 1024 * 1024, workload_kv_type, workload_kv_length, workload_kv_proportion, SCAN_RANGE / num_backend_thread);
     Workload* workload = new Workload(benchmark, db, num_server_thread);
     workload->Run();
     benchmark->Print();
 
     for (int i = 0; i < num_workloads; i++) {
         if (ycsb_workloads[i] == YCSB_E) {
-            benchmark = new YCSB_Benchmark(ycsb_workloads[i], num_server_thread, dbsize * 1024 * 1024, workload_size[i] * 1024 * 1024 / 10, workload_kv_type, workload_kv_length, workload_kv_proportion, SCAN_RANGE / num_backend_thread);
+            benchmark = new YCSB_Benchmark(ycsb_workloads[i] | zipfan, num_server_thread, dbsize * 1024 * 1024, workload_size[i] * 1024 * 1024 / 10, workload_kv_type, workload_kv_length, workload_kv_proportion, SCAN_RANGE / num_backend_thread);
         } else {
-            benchmark = new YCSB_Benchmark(ycsb_workloads[i], num_server_thread, dbsize * 1024 * 1024, workload_size[i] * 1024 * 1024, workload_kv_type, workload_kv_length, workload_kv_proportion, SCAN_RANGE / num_backend_thread);
+            benchmark = new YCSB_Benchmark(ycsb_workloads[i] | zipfan, num_server_thread, dbsize * 1024 * 1024, workload_size[i] * 1024 * 1024, workload_kv_type, workload_kv_length, workload_kv_proportion, SCAN_RANGE / num_backend_thread);
         }
         workload = new Workload(benchmark, db, num_server_thread);
         workload->Run();
