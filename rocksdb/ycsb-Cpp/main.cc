@@ -12,6 +12,8 @@ INITIALIZE_EASYLOGGINGPP
 
 using namespace rocksdb;
 
+#define SCAN_RANGE 100
+
 static int num_workloads = 6;
 // static int ycsb_workloads[] = { YCSB_ONLY_WRITE };
 static size_t dbsize = 128 * 1024;

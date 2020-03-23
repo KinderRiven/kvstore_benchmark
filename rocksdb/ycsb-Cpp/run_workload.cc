@@ -9,8 +9,6 @@
 #include <pthread.h>
 #include <vector>
 
-#define SCAN_RANGE 100
-
 #include "rocksdb/db.h"
 using namespace rocksdb;
 
@@ -139,7 +137,7 @@ static void* thread_task(void* thread_args)
             for (it->Seek(sk); it->Valid(); it->Next()) {
                 vec_values.push_back(it->value().ToString());
                 scan_count++;
-                if (scan_count == SCAN_RANGE) {
+                if (scan_count == benchmark->GetScanRange()) {
                     break;
                 }
             }
@@ -235,13 +233,13 @@ void Workload::Run()
         for (int j = 0; j < OPT_TYPE_COUNT; j++) {
             if (small_latency[i][j].size() > 0) {
                 char name[128];
-                snprintf(name, sizeof(name), "detail_latency/%s_%d_%d.small", workload_name[benchmark->get_type() >> 1], i, j);
+                snprintf(name, sizeof(name), "detail_latency/%s_%d_%d.small", workload_name[benchmark->GetType() >> 1], i, j);
                 result_output(name, small_latency[i][j]);
                 small_latency[i][j].clear();
             }
             if (large_latency[i][j].size() > 0) {
                 char name[128];
-                snprintf(name, sizeof(name), "detail_latency/%s_%d_%d.large", workload_name[benchmark->get_type() >> 1], i, j);
+                snprintf(name, sizeof(name), "detail_latency/%s_%d_%d.large", workload_name[benchmark->GetType() >> 1], i, j);
                 result_output(name, large_latency[i][j]);
                 large_latency[i][j].clear();
             }
