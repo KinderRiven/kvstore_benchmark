@@ -61,7 +61,7 @@ static void* thread_task(void* thread_args)
 
     Benchmark* benchmark = param->benchmark;
     assert(benchmark != nullptr);
-    benchmark->init_thread();
+    benchmark->Init();
 
     Status status;
     DB* db = (DB*)param->db;
@@ -90,7 +90,7 @@ static void* thread_task(void* thread_args)
     Slice sk, sv;
 
     while (true) {
-        int test_type = benchmark->get_kv_item(thread_id, &key, key_length, &value, value_length);
+        int test_type = benchmark->GenerateNewKVPair(thread_id, &key, key_length, &value, value_length);
         param->bytes += value_length;
         if (test_type == -1) {
             break;
