@@ -30,7 +30,6 @@ int main(int argc, char* argv[])
     char pmem_file_path[128] = "/home/pmem0/pm";
     size_t pmem_file_size = (size_t)512 * 1024 * 1024;
     // Benchmark
-    int seq = 0; // seq or random
     int num_server_thread = 1; // server thread
     int num_backend_thread = 1; // backend thread
     // LSM-Tree
@@ -50,25 +49,6 @@ int main(int argc, char* argv[])
             num_server_thread = n;
         } else if (sscanf(argv[i], "--num_backend_thread=%llu%c", &n, &junk) == 1) {
             num_backend_thread = n;
-        } else if (sscanf(argv[i], "--num_warm=%llu%c", &n, &junk) == 1) {
-            num_warm_opt[OPT_PUT] = n;
-        } else if (sscanf(argv[i], "--num_put=%llu%c", &n, &junk) == 1) {
-            num_run_opt[OPT_PUT] = n;
-        } else if (sscanf(argv[i], "--num_update=%llu%c", &n, &junk) == 1) {
-            num_run_opt[OPT_UPDATE] = n;
-        } else if (sscanf(argv[i], "--num_get=%llu%c", &n, &junk) == 1) {
-            num_run_opt[OPT_GET] = n;
-        } else if (sscanf(argv[i], "--num_delete=%llu%c", &n, &junk) == 1) {
-            num_run_opt[OPT_DELETE] = n;
-        } else if (sscanf(argv[i], "--num_scan=%llu%c", &n, &junk) == 1) {
-            num_run_opt[OPT_SCAN] = n;
-        } else if (sscanf(argv[i], "--scan_range=%llu%c", &n, &junk) == 1) {
-            scan_range = n;
-        } else if (sscanf(argv[i], "--seed=%llu%c", &n, &junk) == 1) {
-            warm_seed[0] = n;
-            run_seed[1] = run_seed[2] = run_seed[3] = run_seed[4] = n;
-        } else if (sscanf(argv[i], "--seq=%llu%c", &n, &junk) == 1) {
-            seq = n;
         } else if (strncmp(argv[i], "--db=", 5) == 0) {
             strcpy(ssd_path, argv[i] + 5);
         } else if (strncmp(argv[i], "--nvm=", 6) == 0) {
