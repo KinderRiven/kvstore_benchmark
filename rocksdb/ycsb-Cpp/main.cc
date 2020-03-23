@@ -53,8 +53,6 @@ int main(int argc, char* argv[])
             strcpy(ssd_path, argv[i] + 5);
         } else if (strncmp(argv[i], "--nvm=", 6) == 0) {
             strcpy(pmem_file_path, argv[i] + 6);
-        } else if (strncmp(argv[i], "--benchmark=", 12) == 0) {
-            strcpy(benchmark_type, argv[i] + 12);
         } else if (i > 0) {
             LOG(INFO) << "Error Parameter [" << argv[i] << "]";
             return 0;
