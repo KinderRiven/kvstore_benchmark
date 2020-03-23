@@ -28,7 +28,6 @@ int main(int argc, char* argv[])
 {
     char ssd_path[128] = "./pika_store";
     char pmem_file_path[128] = "/home/pmem0/pm";
-    char benchmark_type[128] = "ycsb_a, ycsb_b, ycsb_c, ycsb_d, ycsb_e, ycsb_f";
     size_t pmem_file_size = (size_t)512 * 1024 * 1024;
     // Benchmark
     int seq = 0; // seq or random
@@ -41,7 +40,6 @@ int main(int argc, char* argv[])
     uint64_t block_size = 4096;
 
     printf("FFFF_1 (%llu)\n", block_size);
-
     for (int i = 0; i < argc; i++) {
         double d;
         uint64_t n;
@@ -102,7 +100,6 @@ int main(int argc, char* argv[])
     LOG(INFO) << "|- [block_size:" << block_size << "]";
     LOG(INFO) << "|- [bloom_bits:" << bloom_bits << "]";
     LOG(INFO) << "|-------------------------------------------";
-
     DB* db = nullptr;
     Status status = DB::Open(options, ssd_path, &db);
     assert(db != nullptr);
@@ -114,7 +111,6 @@ int main(int argc, char* argv[])
     Workload* workload = new Workload(benchmark, db, num_server_thread);
     workload->Run();
     benchmark->Print();
-
     for (int i = 0; i < num_workloads; i++) {
         if (ycsb_workloads[i] == YCSB_E) {
             benchmark = new YCSB_Benchmark(ycsb_workloads[i] | zipfan, num_server_thread, dbsize * 1024 * 1024, workload_size[i] * 1024 * 1024 / 10, workload_kv_type, workload_kv_length, workload_kv_proportion, SCAN_RANGE / num_backend_thread);
