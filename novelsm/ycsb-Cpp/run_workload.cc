@@ -78,8 +78,8 @@ static void* thread_task(void* thread_args)
 #endif
 
     int result;
-    uint8_t* key;
-    uint8_t* value;
+    char* key;
+    char* value;
     size_t key_length;
     size_t value_length;
     uint64_t scan_count;
