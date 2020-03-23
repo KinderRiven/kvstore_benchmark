@@ -34,11 +34,6 @@ int main(int argc, char* argv[])
     int seq = 0; // seq or random
     int num_server_thread = 1; // server thread
     int num_backend_thread = 1; // backend thread
-    uint64_t num_warm_opt[OPT_TYPE_COUNT] = { 100000000, 0, 0, 0, 0 };
-    uint64_t num_run_opt[OPT_TYPE_COUNT] = { 20000000, 0, 0, 0, 0 };
-    int warm_seed[OPT_TYPE_COUNT] = { 1000, 0, 0, 0, 0 };
-    int run_seed[OPT_TYPE_COUNT] = { 2000, 1000, 1000, 1000, 1000 };
-    uint64_t scan_range = 100;
     // LSM-Tree
     uint64_t max_file_size = 64 * 1024 * 1024;
     uint64_t write_buffer_size = 64 * 1024 * 1024;
