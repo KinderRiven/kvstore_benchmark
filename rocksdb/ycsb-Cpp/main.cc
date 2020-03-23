@@ -16,7 +16,7 @@ using namespace rocksdb;
 
 static int num_workloads = 6;
 // static int ycsb_workloads[] = { YCSB_ONLY_WRITE };
-static int zipfan = 0;
+static int zipfan = 1;
 static size_t dbsize = 128 * 1024;
 static int ycsb_workloads[] = { YCSB_A, YCSB_B, YCSB_C, YCSB_D, YCSB_E, YCSB_F };
 static size_t workload_size[] = { 32 * 1024, 32 * 1024, 32 * 1024, 32 * 1024, 32 * 1024 }; // MB
