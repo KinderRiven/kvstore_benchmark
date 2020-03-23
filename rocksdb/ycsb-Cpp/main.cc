@@ -23,9 +23,6 @@ static double workload_kv_proportion[] = { 0.5, 0.5 };
 
 int main(int argc, char* argv[])
 {
-    Benchmark* warm_benchmark;
-    Benchmark* run_benchmark;
-    // DB_DB
     char ssd_path[128] = "./pika_store";
     char pmem_file_path[128] = "/home/pmem0/pm";
     char benchmark_type[128] = "ycsb_a, ycsb_b, ycsb_c, ycsb_d, ycsb_e, ycsb_f";
