@@ -157,6 +157,8 @@ static void* thread_task(void* thread_args)
 #endif
         param->sum_count[test_type]++;
         param->sum_opt_count++;
+        delete key;
+        delete value;
     }
     total_timer.Stop();
     param->total_time = total_timer.Get();
